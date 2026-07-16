@@ -30,19 +30,19 @@ export function SiteHeader({ variant = 'hero' }: SiteHeaderProps) {
             Classes
           </Link>
         )}
-        {variant === 'detail' ? (
+        {variant === 'hero' ? (
+          <Link className="nav-cta" to="/roles">
+            Board Now
+          </Link>
+        ) : (
           <a
             className="nav-cta"
             href="https://www.lifeatflytbase.com/openings"
             target="_blank"
             rel="noopener noreferrer"
           >
-            View all openings
+            {variant === 'detail' ? 'View all openings' : 'View all the positions'}
           </a>
-        ) : (
-          <Link className="nav-cta" to="/roles">
-            {variant === 'hero' ? 'Board Now' : 'Browse'}
-          </Link>
         )}
       </nav>
     </header>
