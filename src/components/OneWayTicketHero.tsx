@@ -173,6 +173,47 @@ function ImpactDust() {
   )
 }
 
+/** Small random-looking clouds flanking the CRT (no cropping). */
+const CRT_CLOUDS = [
+  { top: '4%', left: '-14%', width: '15%', duration: '12s', delay: '0s', opacity: 0.9 },
+  { top: '28%', left: '-22%', width: '11%', duration: '15s', delay: '-3s', opacity: 0.72 },
+  { top: '52%', left: '-8%', width: '13%', duration: '10s', delay: '-6s', opacity: 0.8 },
+  { top: '14%', left: '12%', width: '9%', duration: '13s', delay: '-1s', opacity: 0.65 },
+  { top: '6%', left: '78%', width: '14%', duration: '14s', delay: '-2s', opacity: 0.88 },
+  { top: '34%', left: '86%', width: '10%', duration: '11s', delay: '-5s', opacity: 0.7 },
+  { top: '58%', left: '74%', width: '12%', duration: '16s', delay: '-8s', opacity: 0.76 },
+  { top: '18%', left: '68%', width: '8%', duration: '9s', delay: '-4s', opacity: 0.62 },
+  /* Bottom-right corner of the computer scene */
+  { top: '78%', left: '88%', width: '16%', duration: '13s', delay: '0s', opacity: 0.92 },
+] as const
+
+function CrtClouds() {
+  return (
+    <div className="crt-clouds" aria-hidden="true">
+      {CRT_CLOUDS.map((cloud, i) => (
+        <img
+          key={i}
+          className={`crt-cloud crt-cloud--${i}`}
+          src="/pixel-cloud.png"
+          alt=""
+          width={865}
+          height={307}
+          draggable={false}
+          decoding="async"
+          style={{
+            top: cloud.top,
+            left: cloud.left,
+            width: cloud.width,
+            opacity: cloud.opacity,
+            ['--cloud-duration' as string]: cloud.duration,
+            ['--cloud-delay' as string]: cloud.delay,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 function leftClip(progress: number, gapPx: number, width: number): string {
   const w = width > 0 ? width : 640
   const perf = PERF_X * 100
@@ -451,9 +492,36 @@ export function OneWayTicketHero() {
             >
               {(phase === 'ticket' || (phase === 'cutting' && cutProgress < 0.12)) && (
                 <div className="ticket-tear-callout" aria-hidden="true">
+                  <svg
+                    className="ticket-tear-connector"
+                    viewBox="0 0 280 180"
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <marker
+                        id="tear-arrowhead"
+                        markerWidth="12"
+                        markerHeight="12"
+                        refX="9"
+                        refY="5"
+                        orient="auto"
+                        markerUnits="strokeWidth"
+                      >
+                        <path
+                          d="M1.4 1.1 C0.7 2.8 0.7 7.2 1.4 8.9 C2.8 7.8 6.4 6 9.4 5 C6.4 4 2.8 2.2 1.4 1.1 Z"
+                          fill="#ffcc00"
+                        />
+                      </marker>
+                    </defs>
+                    <path
+                      className="ticket-tear-connector__path"
+                      d="M 218 48 C 175 68, 138 95, 155 118 C 172 140, 215 132, 200 105 C 188 82, 135 74, 102 68"
+                      markerEnd="url(#tear-arrowhead)"
+                    />
+                  </svg>
                   <p className="ticket-tear-hint">
-                    <span className="ticket-tear-hint__line">{TICKET.tearHintLine1}</span>
-                    <span className="ticket-tear-hint__line">{TICKET.tearHintLine2}</span>
+                    <strong className="ticket-tear-hint__line">{TICKET.tearHintLine1}</strong>
+                    <strong className="ticket-tear-hint__line">{TICKET.tearHintLine2}</strong>
                   </p>
                 </div>
               )}
@@ -517,9 +585,12 @@ export function OneWayTicketHero() {
         )}
 
         {showLandedCrt && (
-          <div className={`crt-land-slot${droneBeat === 'drop' ? ' is-dropping' : ' is-landed'}`}>
-            <CrtMonitor variant="landed" shaking={shaking} powered={crtPowered} />
-            {showDust && <ImpactDust />}
+          <div className="crt-delivery">
+            <CrtClouds />
+            <div className={`crt-land-slot${droneBeat === 'drop' ? ' is-dropping' : ' is-landed'}`}>
+              <CrtMonitor variant="landed" shaking={shaking} powered={crtPowered} />
+              {showDust && <ImpactDust />}
+            </div>
           </div>
         )}
       </div>
